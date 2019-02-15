@@ -1,0 +1,11 @@
+[Protocol]
+exec=bitbar-qt '%u'
+protocol=bitbar
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false
