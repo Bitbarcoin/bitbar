@@ -349,7 +349,7 @@ void CWallet::WalletUpdateSpent(const CTransaction &tx)
                     printf("WalletUpdateSpent: bad wtx %s\n", wtx.GetHash().ToString().c_str());
                 else if (!wtx.IsSpent(txin.prevout.n) && IsMine(wtx.vout[txin.prevout.n]))
                 {
-                    printf("WalletUpdateSpent found spent coin %snvc %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
+                    printf("WalletUpdateSpent found spent coin %sBTB %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkSpent(txin.prevout.n);
                     wtx.WriteToDisk();
                     NotifyTransactionChanged(this, txin.prevout.hash, CT_UPDATED);
@@ -843,7 +843,7 @@ void CWallet::ReacceptWalletTransactions()
                 }
                 if (fUpdated)
                 {
-                    printf("ReacceptWalletTransactions found spent coin %snvc %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
+                    printf("ReacceptWalletTransactions found spent coin %sBTB %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkDirty();
                     wtx.WriteToDisk();
                 }
@@ -1488,8 +1488,12 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         // Set output amount
         if (txNew.vout.size() == 3)
         {
-            txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 / CENT) * CENT;
-            txNew.vout[2].nValue = nCredit - nMinFee - txNew.vout[1].nValue;
+            if( GetLastBlockIndex(pindexBest, false)->nHeight > 12500 )
+				txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 );
+			else
+				txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 / CENT ) * CENT;
+            
+			txNew.vout[2].nValue = nCredit - nMinFee - txNew.vout[1].nValue;
         }
         else
             txNew.vout[1].nValue = nCredit - nMinFee;
@@ -1848,7 +1852,7 @@ void CWallet::ReturnKey(int64 nIndex)
         LOCK(cs_wallet);
         setKeyPool.insert(nIndex);
     }
-    printf("keypool return %"PRI64d"\n", nIndex);
+//    printf("keypool return %"PRI64d"\n", nIndex);
 }
 
 bool CWallet::GetKeyFromPool(CPubKey& result, bool fAllowReuse)

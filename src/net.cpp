@@ -1061,7 +1061,7 @@ void ThreadMapPort2(void* parg)
             }
         }
 
-        string strDesc = "NovaCoin " + FormatFullVersion();
+        string strDesc = "BitBar " + FormatFullVersion();
 #ifndef UPNPDISCOVER_SUCCESS
         /* miniupnpc 1.5 */
         r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype,
@@ -1149,7 +1149,7 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-    {"novacoin.su", "seed.novacoin.su"},
+    {"btb.altcointech.net", "btb.altcointech.net"},
 };
 
 void ThreadDNSAddressSeed(void* parg)
@@ -1220,7 +1220,6 @@ void ThreadDNSAddressSeed2(void* parg)
 
 unsigned int pnSeed[] =
 {
-    0x90EF78BC, 0x33F1C851, 0x36F1C851, 0xC6F5C851,
 };
 
 void DumpAddresses()
@@ -1727,7 +1726,11 @@ bool BindListenPort(const CService &addrBind, string& strError)
     // and enable it by default or not. Try to enable it, if possible.
     if (addrBind.IsIPv6()) {
 #ifdef IPV6_V6ONLY
+#ifdef WIN32
+        setsockopt(hListenSocket, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&nOne, sizeof(int));
+#else
         setsockopt(hListenSocket, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&nOne, sizeof(int));
+#endif
 #endif
 #ifdef WIN32
         int nProtLevel = 10 /* PROTECTION_LEVEL_UNRESTRICTED */;
@@ -1742,7 +1745,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. NovaCoin is probably already running."), addrBind.ToString().c_str());
+            strError = strprintf(_("Unable to bind to %s on this computer. BitBar is probably already running."), addrBind.ToString().c_str());
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %d, %s)"), addrBind.ToString().c_str(), nErr, strerror(nErr));
         printf("%s\n", strError.c_str());
@@ -1842,19 +1845,19 @@ void StartNode(void* parg)
     // Start threads
     //
 
-/*
+
     if (!GetBoolArg("-dnsseed", true))
         printf("DNS seeding disabled\n");
     else
         if (!NewThread(ThreadDNSAddressSeed, NULL))
             printf("Error: NewThread(ThreadDNSAddressSeed) failed\n");
-*/
 
+/*
     if (!GetBoolArg("-dnsseed", false))
         printf("DNS seeding disabled\n");
     if (GetBoolArg("-dnsseed", false))
         printf("DNS seeding NYI\n");
-
+*/
     // Map ports with UPnP
     if (fUseUPnP)
         MapPort();
